@@ -1,13 +1,14 @@
 import React from "react"
 import RegisterUser from "./RegisterUser"
+import RegisterCompany from "./RegisterCompany"
 import RegisterContext from "./RegisterContext"
 
 const steps = [
     {
-        content: <RegisterUser />,
+        content: <RegisterCompany />,
     },
     {
-        content: 'Second-content',
+        content: <RegisterCompany/>,
     },
     {
         content: 'Last-content',

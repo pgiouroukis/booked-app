@@ -7,9 +7,7 @@ import {
     Checkbox,
     Button, Alert
 } from 'antd';
-import {BarLoader} from "react-spinners"
 import ClipLoader from "react-spinners/ClipLoader";
-
 
 const formItemLayout = {
     labelCol: {
@@ -22,28 +20,25 @@ const formItemLayout = {
 
 export default () => {
     var [loader, setLoader] = useState(false)
+    var [alert, setAlert] = useState(false)
+    
     const context = useContext(RegisterContext)
     const [form] = Form.useForm();
 
     const onFinish = async (values) => {
         console.log('Received values of form: ', values);
         setLoader(true)
+        setAlert(false)
         try {
             const res = await firebase.auth().createUserWithEmailAndPassword(values.email, values.password)
             console.log("success: ", res);
             context.increaseStep();
         } catch (err) {
             console.log("error: ", err)
+            if (err.code === "auth/email-already-in-use")
+                setAlert(true)
         }
-        /*
-        firebase.auth().createUserWithEmailAndPassword(email, password)
-            .catch(function (error) {
-            // Handle Errors here.
-            var errorCode = error.code;
-            var errorMessage = error.message;
-            // ...
-        });
-        */
+        setLoader(false)
     };
 
     return (
@@ -51,16 +46,17 @@ export default () => {
         <div>
             <div style={{ width: "100%" }} className="text-center" >
                 {loader && <ClipLoader size={25} color={"#1890FF"} />}
+                {alert && <><Alert
+                    style={{ backgroundColor: "#FFE8E9", border: "0px", borderRadius: "5px" }}
+                    message={<span style={{ color: "#c33" }}>This email address is already registered.</span>}
+                    type="warning"
+                /><br></br></>}
             </div>
             <Form
                 {...formItemLayout}
                 form={form}
                 name="register"
                 onFinish={onFinish}
-                initialValues={{
-                    residence: ['zhejiang', 'hangzhou', 'xihu'],
-                    prefix: '86',
-                }}
             >
                 <Form.Item
                     name="email"
@@ -88,6 +84,13 @@ export default () => {
                             required: true,
                             message: 'Please input your password!',
                         },
+                        {
+                            validator: (_, value) => {
+                                if (value.length >= 8) return Promise.resolve()
+                                else return Promise.reject('Password must be at least 8 characters!')
+                            }
+                        }
+
                     ]}
                     hasFeedback
                 >
@@ -141,15 +144,3 @@ export default () => {
 
     );
 };
-
-
-/*
-
-            <Alert
-                style={{ backgroundColor: "#FF4D4F", border:"0px", borderRadius:"5px"}}
-                message={<span style={{color:"white"}}>Please do that!</span>}
-                type="warning"
-            /><br></br>
-
-
-*/
