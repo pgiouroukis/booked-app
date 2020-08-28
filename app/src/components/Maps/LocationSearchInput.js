@@ -57,8 +57,9 @@ function SearchLocationInput() {
     const autoCompleteRef = useRef(null);
 
     useEffect(() => {
+        console.log(`key:${process.env.REACT_APP_GOOGLE_API_KEY}`)
         loadScript(
-            `https://maps.googleapis.com/maps/api/js?key=AIzaSyB7SGSIiGlWfLy9zLcTo4D6McVogW4Bl1E&libraries=places`,
+            `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_API_KEY}&libraries=places`,
             () => handleScriptLoad(setQuery, autoCompleteRef)
         );
     }, []);
